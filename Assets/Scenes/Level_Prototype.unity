@@ -2372,7 +2372,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0a9cac44e346f242b0b6d15030f4f3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _valueX: 0
+  _value: {x: 0, y: 0}
   _isJumping: 0
 --- !u!114 &1372494717
 MonoBehaviour:
@@ -2401,6 +2401,11 @@ MonoBehaviour:
     m_Bits: 128
   checkWallDistance: 0.27
   isWallDetected: 0
+  canWallSlide: 0
+  slideSpeed: 0
+  wallJumpForce: {x: 5, y: 8}
+  isWallJumping: 0
+  wallJumpDuration: 0.1
 --- !u!95 &1372494718
 Animator:
   serializedVersion: 7

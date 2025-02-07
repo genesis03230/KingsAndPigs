@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEditor.Tilemaps;
 using UnityEngine;
 using UnityEngine.Lumin;
@@ -6,37 +7,44 @@ using UnityEngine.Lumin;
 public class PlayerController : MonoBehaviour
 {
     [Header("Components")]
-    [SerializeField] private Transform m_transform;
-    private Rigidbody2D m_rigidbody2D;
-    private GatherInput m_gatherInput;
-    private Animator m_animator;
+    [SerializeField] private Transform m_transform; //Referencia al Transform del Player
+    private Rigidbody2D m_rigidbody2D; //Referencia al Rigidbody del Player
+    private GatherInput m_gatherInput; //Referencia al GatherInput
+    private Animator m_animator; //Referencia al Animator del Player
 
     //ANIMATOR IDS
     private int idSpeed;
     private int idIsGrounded;
+    private int idIsWallDetected;
 
     [Header("Move Settings")]
-    [SerializeField] private float speed;
-    private int direction = 1;
+    [SerializeField] private float speed; //Velocidad de movimiento
+    private int direction = 1; //Direccion de movimiento
 
     [Header("Jump Settings")]
-    [SerializeField] private float jumpForce;
-    [SerializeField] private int extraJumps;
-    [SerializeField] private int counterExtraJumps;
-    [SerializeField] private bool canDoubleJump;
+    [SerializeField] private float jumpForce; //Fuerza de salto
+    [SerializeField] private int extraJumps; //Saltos extras
+    [SerializeField] private int counterExtraJumps; //Conteo de Saltos extras
+    [SerializeField] private bool canDoubleJump; //Detectar si puedo hacer doble salto
 
     [Header("Ground Settings")]
     [SerializeField] private Transform lFoot;
     [SerializeField] private Transform rFoot;
     RaycastHit2D lFootRay;
     RaycastHit2D rFootRay;
-    [SerializeField] private bool isGrounded;
-    [SerializeField] private float rayLength;
-    [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private bool isGrounded; //Detectar si esta en el suelo
+    [SerializeField] private float rayLength; //Distancia del rayo
+    [SerializeField] private LayerMask groundLayer; //Layer del suelo
 
     [Header("Wall Settings")]
-    [SerializeField] private float checkWallDistance;
-    [SerializeField] private bool isWallDetected;
+    [SerializeField] private float checkWallDistance; //Chequear la distancia de pared
+    [SerializeField] private bool isWallDetected; //Detectar pared
+    [SerializeField] private bool canWallSlide; //Comprobar si puedo deslizarme por pared
+    [SerializeField] private float slideSpeed; //Velocidad de deslizamiento por pared
+    [SerializeField] private Vector2 wallJumpForce; //Fuerza de salto desde la pared
+    [SerializeField] private bool isWallJumping; //Detectar si puedo saltar desde la pared
+    [SerializeField] private float wallJumpDuration; //Duracion del salto de la pared para recuperar el control del Player
+
 
     private void Awake()
     {
@@ -50,6 +58,7 @@ public class PlayerController : MonoBehaviour
     {
         idSpeed = Animator.StringToHash("speed");
         idIsGrounded = Animator.StringToHash("isGrounded");
+        idIsWallDetected = Animator.StringToHash("isWallDetected");
         lFoot = GameObject.Find("LFoot").GetComponent<Transform>();
         rFoot = GameObject.Find("RFoot").GetComponent<Transform>();
         counterExtraJumps = extraJumps;
@@ -64,6 +73,7 @@ public class PlayerController : MonoBehaviour
     {
         m_animator.SetFloat(idSpeed, Mathf.Abs(m_rigidbody2D.linearVelocityX));
         m_animator.SetBool(idIsGrounded, isGrounded);
+        m_animator.SetBool(idIsWallDetected, isWallDetected);
     }
 
     void FixedUpdate()
@@ -77,11 +87,7 @@ public class PlayerController : MonoBehaviour
     {
         HandleGround();
         HandleWall();
-    }
-
-    private void HandleWall()
-    {
-        isWallDetected = Physics2D.Raycast(m_transform.position, Vector2.right * direction, checkWallDistance, groundLayer);
+        HandleWallSlide();
     }
 
     private void HandleGround()
@@ -100,19 +106,41 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void HandleWall()
+    {
+        isWallDetected = Physics2D.Raycast(m_transform.position, Vector2.right * direction, checkWallDistance, groundLayer);
+    }
+
+    private void HandleWallSlide()
+    {
+        canWallSlide = isWallDetected;
+        if (!canWallSlide) return;
+        canDoubleJump = false;
+        slideSpeed = m_gatherInput.Value.y < 0 ? 1 : 0.5f;
+        m_rigidbody2D.linearVelocity = new Vector2(m_rigidbody2D.linearVelocityX, m_rigidbody2D.linearVelocityY * slideSpeed);
+    }
+
     private void Move()
     {
+        if (isWallDetected && !isGrounded) return; //Esto sale del metodo y no me permite hacer flip estando en una pared
+        if (isWallJumping) return;
+
         Flip();
-        m_rigidbody2D.linearVelocity = new Vector2(speed * m_gatherInput.ValueX, m_rigidbody2D.linearVelocityY);
+        m_rigidbody2D.linearVelocity = new Vector2(speed * m_gatherInput.Value.x, m_rigidbody2D.linearVelocityY);
     }
 
     private void Flip()
     {
-        if(m_gatherInput.ValueX * direction < 0)
+        if(m_gatherInput.Value.x * direction < 0)
         {
-            m_transform.localScale = new Vector3(-m_transform.localScale.x, 1, 1);
-            direction *= -1;
+            HandleDirection();
         }
+    }
+
+    private void HandleDirection()
+    {
+        m_transform.localScale = new Vector3(-m_transform.localScale.x, 1, 1);
+        direction *= -1;
     }
 
     private void Jump()
@@ -121,16 +149,33 @@ public class PlayerController : MonoBehaviour
         {
             if (isGrounded)
             {
-                m_rigidbody2D.linearVelocity = new Vector2(speed * m_gatherInput.ValueX, jumpForce);
+                m_rigidbody2D.linearVelocity = new Vector2(speed * m_gatherInput.Value.x, jumpForce);
                 canDoubleJump = true;
             }
-            else if (counterExtraJumps > 0 && canDoubleJump)
-            {
-                m_rigidbody2D.linearVelocity = new Vector2(speed * m_gatherInput.ValueX, jumpForce);
-                counterExtraJumps--;
-            }
+            else if (isWallDetected) WallJump();
+            else if (counterExtraJumps > 0 && canDoubleJump) DoubleJump();
         }
         m_gatherInput.IsJumping = false;
+    }
+
+    private void WallJump()
+    {
+        m_rigidbody2D.linearVelocity = new Vector2(wallJumpForce.x * -direction, wallJumpForce.y);
+        HandleDirection();
+        StartCoroutine(WallJumpRoutine());
+    }
+
+    IEnumerator WallJumpRoutine()
+    {
+        isWallJumping = true; //Si he saltado desde la pared
+        yield return new WaitForSeconds(wallJumpDuration); //Esperar un tiempo predeterminado
+        isWallJumping = false; //Y recuperar el control del Player
+    }
+
+    private void DoubleJump()
+    {
+        m_rigidbody2D.linearVelocity = new Vector2(speed * m_gatherInput.Value.x, jumpForce);
+        counterExtraJumps--;
     }
 
     private void OnDrawGizmos()
