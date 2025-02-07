@@ -16,6 +16,7 @@ public class PlayerController : MonoBehaviour
     private int idSpeed;
     private int idIsGrounded;
     private int idIsWallDetected;
+    private int idKnockback;
 
     [Header("Move Settings")]
     [SerializeField] private float speed; //Velocidad de movimiento
@@ -45,6 +46,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private bool isWallJumping; //Detectar si puedo saltar desde la pared
     [SerializeField] private float wallJumpDuration; //Duracion del salto de la pared para recuperar el control del Player
 
+    [Header("Knock Settings")]
+    [SerializeField] private bool isKnocked;
+    [SerializeField] private bool canBeKnocked;
+    [SerializeField] private Vector2 knockedPower;
+    [SerializeField] private float knockedDuration;
+
+
 
     private void Awake()
     {
@@ -59,6 +67,7 @@ public class PlayerController : MonoBehaviour
         idSpeed = Animator.StringToHash("speed");
         idIsGrounded = Animator.StringToHash("isGrounded");
         idIsWallDetected = Animator.StringToHash("isWallDetected");
+        idKnockback = Animator.StringToHash("knockback");
         lFoot = GameObject.Find("LFoot").GetComponent<Transform>();
         rFoot = GameObject.Find("RFoot").GetComponent<Transform>();
         counterExtraJumps = extraJumps;
@@ -78,6 +87,7 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (isKnocked) return; //Si el personaje esta noqueado, no ejecuta ningun metodo siguiente
         CheckColiision();
         Move();
         Jump();
@@ -176,6 +186,22 @@ public class PlayerController : MonoBehaviour
     {
         m_rigidbody2D.linearVelocity = new Vector2(speed * m_gatherInput.Value.x, jumpForce);
         counterExtraJumps--;
+    }
+
+    public void Knockback()
+    {
+        StartCoroutine(KnockbackRoutine());
+        m_rigidbody2D.linearVelocity = new Vector2(knockedPower.x * -direction, knockedPower.y);
+        m_animator.SetTrigger(idKnockback);
+    }
+
+    private IEnumerator KnockbackRoutine()
+    {
+        isKnocked = true;
+        canBeKnocked = false;
+        yield return new WaitForSeconds(knockedDuration);
+        isKnocked = false;
+        canBeKnocked = true;
     }
 
     private void OnDrawGizmos()
