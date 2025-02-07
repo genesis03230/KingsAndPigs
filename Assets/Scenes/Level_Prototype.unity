@@ -2386,10 +2386,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4c1bb9f4b05b304bba810dfb102a197, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_transform: {fileID: 1372494712}
   speed: 4
   jumpForce: 10
   extraJumps: 1
   counterExtraJumps: 0
+  canDoubleJump: 0
   lFoot: {fileID: 0}
   rFoot: {fileID: 0}
   isGrounded: 0
@@ -2397,6 +2399,8 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 128
+  checkWallDistance: 0.27
+  isWallDetected: 0
 --- !u!95 &1372494718
 Animator:
   serializedVersion: 7
