@@ -8,7 +8,7 @@ public class DoorsEvent : MonoBehaviour
 
     private void OnEnable()
     {
-        _idOpenDoor = Animator.StringToHash("Open");
+        _idOpenDoor = Animator.StringToHash("OpenDoor");
         entranceDoor = GameObject.FindGameObjectWithTag("EntranceDoor");
         animatorEntranceDoor = entranceDoor.GetComponent<Animator>();
     }

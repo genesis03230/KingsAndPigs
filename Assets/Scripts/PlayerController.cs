@@ -1,9 +1,11 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
 public class PlayerController : MonoBehaviour
 {
+
     [Header("Components")] 
     [SerializeField] private Transform myTransform; //Referencia al Transform del Player
     private Rigidbody2D _rigidbody2D; //Referencia al Rigidbody del Player
@@ -55,6 +57,7 @@ public class PlayerController : MonoBehaviour
     private readonly int _idKnockback = Animator.StringToHash("knockback");
     private readonly int _idSpeed = Animator.StringToHash("speed");
     private readonly int _idIdle = Animator.StringToHash("Idle");
+    private readonly int _idDoorIn = Animator.StringToHash("doorIn");
 
     private void Awake()
     {
@@ -97,11 +100,6 @@ public class PlayerController : MonoBehaviour
         Jump();
     }
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.DrawLine(myTransform.position,
-            new Vector2(myTransform.position.x + checkWallDistance * _direction, myTransform.position.y));
-    }
 
     private void SetAnimatorValues()
     {
@@ -228,5 +226,25 @@ public class PlayerController : MonoBehaviour
     {
         var deathVFXPrefab = Instantiate(deathVFX, myTransform.position, Quaternion.identity);
         Destroy(gameObject);
+    }
+
+    public void DoorIn()
+    {
+        _rigidbody2D.linearVelocity = Vector2.zero;
+        _animator.Play(_idIdle);
+        _animator.SetBool(_idDoorIn, true);
+        canMove = false;
+        StartCoroutine(DoorInRoutine());
+    }
+
+    private IEnumerator DoorInRoutine()
+    {
+        yield return new WaitForSeconds(moveDelay);
+        SceneManager.LoadScene(0);
+    }
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawLine(myTransform.position,
+            new Vector2(myTransform.position.x + checkWallDistance * _direction, myTransform.position.y));
     }
 }
