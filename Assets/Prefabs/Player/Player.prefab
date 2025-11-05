@@ -281,7 +281,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4c1bb9f4b05b304bba810dfb102a197, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mTransform: {fileID: 7075689299868144067}
+  myTransform: {fileID: 7075689299868144067}
   speed: 4
   canMove: 0
   moveDelay: 0.8
