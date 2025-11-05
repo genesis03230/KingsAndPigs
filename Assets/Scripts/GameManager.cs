@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -18,6 +19,7 @@ public class GameManager : MonoBehaviour
     [Header("Diamond Manager")] 
     [SerializeField] private int diamondCollected;
     [SerializeField] private bool diamondHaveRandomLook;
+    [SerializeField] private int totalDiamonds;
     public int DiamondCollected => diamondCollected;
     public PlayerController PlayerController => playerController;
 
@@ -25,6 +27,17 @@ public class GameManager : MonoBehaviour
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
+    }
+
+    private void Start()
+    {
+        TotalDiamondsInLevel();
+    }
+
+    private void TotalDiamondsInLevel()
+    {
+        GameObject[] diamonds = GameObject.FindGameObjectsWithTag("Diamond");
+        totalDiamonds = diamonds.Length;
     }
 
     public void RespawnPlayer()

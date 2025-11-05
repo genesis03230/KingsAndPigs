@@ -5,7 +5,6 @@ using UnityEngine.Serialization;
 
 public class PlayerController : MonoBehaviour
 {
-
     [Header("Components")] 
     [SerializeField] private Transform myTransform; //Referencia al Transform del Player
     private Rigidbody2D _rigidbody2D; //Referencia al Rigidbody del Player

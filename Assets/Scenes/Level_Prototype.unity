@@ -470,6 +470,7 @@ MonoBehaviour:
   checkpointRespawnPosition: {x: 0, y: 0, z: 0}
   diamondCollected: 0
   diamondHaveRandomLook: 0
+  totalDiamonds: 0
 --- !u!4 &249123540
 Transform:
   m_ObjectHideFlags: 0
