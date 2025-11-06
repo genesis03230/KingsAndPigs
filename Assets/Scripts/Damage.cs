@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class TestKnock : MonoBehaviour
+public class Damage : MonoBehaviour
 {
     private void OnTriggerEnter2D(Collider2D collision)
     {
