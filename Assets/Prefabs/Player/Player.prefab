@@ -304,7 +304,7 @@ MonoBehaviour:
   isWallJumping: 0
   wallJumpDuration: 0.3
   isKnocked: 0
-  knockedPower: {x: 2, y: 0}
+  defaultKnockedPower: {x: 3, y: 0}
   knockedDuration: 0.3
   deathVFX: {fileID: 8466261328884285460, guid: 9f39af14dc2653945979cdf86be550e4, type: 3}
 --- !u!95 &7632923143271009695
