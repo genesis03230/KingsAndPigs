@@ -10,11 +10,20 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D _rigidbody2D; //Referencia al Rigidbody del Player
     private GatherInput _gatherInput; //Referencia al GatherInput
     private Animator _animator; //Referencia al Animator del Player
+    
+    //ANIMATOR IDS
+    private readonly int _idIsGrounded = Animator.StringToHash("isGrounded");
+    private readonly int _idSpeed = Animator.StringToHash("speed");
+    private readonly int _idIsWallDetected = Animator.StringToHash("isWallDetected");
+    private readonly int _idKnockback = Animator.StringToHash("isKnockback");
+    private readonly int _idIdle = Animator.StringToHash("Idle");
+    private readonly int _idDoorIn = Animator.StringToHash("doorIn");
 
     [Header("Move Settings")] 
     [SerializeField] private float speed; //Velocidad de movimiento
     [SerializeField] private bool canMove;
     [SerializeField] private float moveDelay;
+    private int _direction = 1; //Direccion de movimiento
 
     [Header("Jump Settings")] 
     [SerializeField] private float jumpForce; //Fuerza de salto
@@ -25,11 +34,11 @@ public class PlayerController : MonoBehaviour
     [Header("Ground Settings")] 
     [SerializeField] private Transform lFoot;
     [SerializeField] private Transform rFoot;
+    private RaycastHit2D _lFootRay;
+    private RaycastHit2D _rFootRay;
     [SerializeField] private bool isGrounded; //Detectar si esta en el suelo
     [SerializeField] private float rayLength; //Distancia del rayo
     [SerializeField] private LayerMask groundLayer; //Layer del suelo
-    private RaycastHit2D _lFootRay;
-    private RaycastHit2D _rFootRay;
 
     [Header("Wall Settings")] 
     [SerializeField] private float checkWallDistance; //Chequear la distancia de pared
@@ -50,16 +59,6 @@ public class PlayerController : MonoBehaviour
 
     [Header("Death VFX")] 
     [SerializeField] private GameObject deathVFX;
-    private int _direction = 1; //Direccion de movimiento
-
-    //ANIMATOR IDS
-    private readonly int _idIsGrounded = Animator.StringToHash("isGrounded");
-    private readonly int _idIsWallDetected = Animator.StringToHash("isWallDetected");
-    private readonly int _idKnockback = Animator.StringToHash("isKnockback");
-    private readonly int _idSpeed = Animator.StringToHash("speed");
-    private readonly int _idIdle = Animator.StringToHash("Idle");
-    private readonly int _idDoorIn = Animator.StringToHash("doorIn");
-
 
     private void Awake()
     {
@@ -94,6 +93,13 @@ public class PlayerController : MonoBehaviour
         SetAnimatorValues();
     }
 
+    private void SetAnimatorValues()
+    {
+        _animator.SetFloat(_idSpeed, Mathf.Abs(_rigidbody2D.linearVelocityX));
+        _animator.SetBool(_idIsGrounded, isGrounded);
+        _animator.SetBool(_idIsWallDetected, isWallDetected);
+    }
+    
     private void FixedUpdate()
     {
         if (!canMove) return;
@@ -101,14 +107,6 @@ public class PlayerController : MonoBehaviour
         CheckCollision();
         Move();
         Jump();
-    }
-
-
-    private void SetAnimatorValues()
-    {
-        _animator.SetFloat(_idSpeed, Mathf.Abs(_rigidbody2D.linearVelocityX));
-        _animator.SetBool(_idIsGrounded, isGrounded);
-        _animator.SetBool(_idIsWallDetected, isWallDetected);
     }
 
     private void CheckCollision()
@@ -201,6 +199,7 @@ public class PlayerController : MonoBehaviour
         isWallJumping = true; //Si he saltado desde la pared
         yield return new WaitForSeconds(wallJumpDuration); //Esperar un tiempo predeterminado
         isWallJumping = false; //Y recuperar el control del Player
+        Flip();
     }
 
     private void DoubleJump()

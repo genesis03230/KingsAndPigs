@@ -9,3 +9,10 @@ GUÍA DE ESTILOS C#
     - variables componentes locales m por delante = mNombreComponente;
     - Por defecto todas las variables son privadas;
     - Por defecto todos los métodos son privados;
+    
+    float sourceDamageXPosition
+    
+     float _direction = 1;
+    
+            if (transform.position.x < sourceDamageXPosition)
+                _direction = -1;

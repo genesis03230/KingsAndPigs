@@ -11,6 +11,8 @@ public class SawController : MonoBehaviour
     [SerializeField] private float waitForMove = 1;
     private Animator _animator;
     private SpriteRenderer _spriteRenderer;
+    private int _moveDirection = 1;
+    private Vector3[] _wayPointsPosition;
 
     private void Awake()
     {
@@ -20,20 +22,36 @@ public class SawController : MonoBehaviour
 
     private void Start()
     {
-        transform.position = wayPoints[0].position;
+        UpdateWaypointsInfo();
+        transform.position = _wayPointsPosition[0];
+    }
+
+    private void UpdateWaypointsInfo()
+    {
+        _wayPointsPosition = new Vector3[wayPoints.Length];
+
+        for (int i = 0; i < wayPoints.Length; i++)
+        {
+            _wayPointsPosition[i] = wayPoints[i].position;
+        }
     }
 
     private void Update()
     {
         _animator.SetBool("sawActive", canMove);
         if (!canMove)  return;
-        transform.position = Vector2.MoveTowards(transform.position, wayPoints[indexWayPoint].position, speed * Time.deltaTime);
-        if(!(Vector2.Distance(transform.position, wayPoints[indexWayPoint].position) < 0.1f)) return;
-        indexWayPoint++;
-        if (indexWayPoint >= wayPoints.Length)
+        
+        transform.position = Vector2.MoveTowards(transform.position, _wayPointsPosition[indexWayPoint], speed * Time.deltaTime);
+        
+        if (Vector2.Distance(transform.position, _wayPointsPosition[indexWayPoint]) < 0.1f)
         {
-            indexWayPoint = 0;
-            StartCoroutine(StopMovement(waitForMove));
+            if (indexWayPoint == _wayPointsPosition.Length - 1 || indexWayPoint == 0)
+            {
+                _moveDirection = _moveDirection * -1;
+                StartCoroutine(StopMovement(waitForMove));
+            }
+            
+            indexWayPoint = indexWayPoint + _moveDirection;
         }
     }
     
