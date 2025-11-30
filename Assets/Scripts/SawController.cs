@@ -13,6 +13,7 @@ public class SawController : MonoBehaviour
     private SpriteRenderer _spriteRenderer;
     private int _moveDirection = 1;
     private Vector3[] _wayPointsPosition;
+    
 
     private void Awake()
     {
@@ -22,11 +23,11 @@ public class SawController : MonoBehaviour
 
     private void Start()
     {
-        UpdateWaypointsInfo();
+        UpdateWaypoints();
         transform.position = _wayPointsPosition[0];
     }
 
-    private void UpdateWaypointsInfo()
+    private void UpdateWaypoints()
     {
         _wayPointsPosition = new Vector3[wayPoints.Length];
 
@@ -40,10 +41,9 @@ public class SawController : MonoBehaviour
     {
         _animator.SetBool("sawActive", canMove);
         if (!canMove)  return;
-        
         transform.position = Vector2.MoveTowards(transform.position, _wayPointsPosition[indexWayPoint], speed * Time.deltaTime);
         
-        if (Vector2.Distance(transform.position, _wayPointsPosition[indexWayPoint]) < 0.1f)
+        if(Vector2.Distance(transform.position, _wayPointsPosition[indexWayPoint]) < 0.1f)
         {
             if (indexWayPoint == _wayPointsPosition.Length - 1 || indexWayPoint == 0)
             {
