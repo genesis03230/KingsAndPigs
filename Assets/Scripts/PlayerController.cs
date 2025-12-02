@@ -104,10 +104,10 @@ public class PlayerController : MonoBehaviour
     {
         if (!canMove)
         {
-            HandleGround();
-            HandleWall();
-            SetAnimatorValues();
-            return;
+            HandleGround(); 
+            HandleWall(); 
+            SetAnimatorValues(); 
+            return; 
         }
         if (isKnocked) return; //Si el personaje esta noqueado, no ejecuta ningun metodo siguiente
         CheckCollision();
