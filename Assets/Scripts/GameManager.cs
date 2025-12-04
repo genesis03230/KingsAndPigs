@@ -20,6 +20,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int diamondCollected;
     [SerializeField] private bool diamondHaveRandomLook;
     [SerializeField] private int totalDiamonds;
+
+    [Header("Traps")] 
+    public GameObject arrowPrefab;
     public int DiamondCollected => diamondCollected;
     public PlayerController PlayerController => playerController;
 
@@ -56,4 +59,15 @@ public class GameManager : MonoBehaviour
 
     public void AddDiamond() => diamondCollected++;
     public bool DiamondHaveRandomLook() => diamondHaveRandomLook;
+
+    public void CreateObject(GameObject prefab, Transform target, float delay = 0)
+    {
+        StartCoroutine(CreateObjectCourutine(prefab, target, delay));
+    }
+    private IEnumerator CreateObjectCourutine(GameObject prefab, Transform target, float delay)
+    {
+        Vector3 newPosition = target.position;
+        yield return new WaitForSeconds(delay);
+        GameObject newObject = Instantiate(prefab, newPosition, Quaternion.identity);
+    }
 }
