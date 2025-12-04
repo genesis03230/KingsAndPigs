@@ -7,8 +7,28 @@ public class ArrowController : TrampolineController
     [SerializeField] private bool rotationRight;
     [SerializeField] private float rotationSpeed = 120;
     private int _direction = -1;
+    [Space] 
+    [SerializeField] private float scaleUpSpeed = 10;
+    [SerializeField] private Vector3 targetScale;
+
+    private void Start()
+    {
+        transform.localScale = new Vector3(.3f,.3f,.3f);
+    }
 
     private void Update()
+    {
+        HandleScaleUp();
+        HandleRotation();
+    }
+
+    private void HandleScaleUp()
+    {
+        if(transform.localScale.x < targetScale.x)
+            transform.localScale = Vector3.Lerp(transform.localScale, targetScale, scaleUpSpeed * Time.deltaTime);
+    }
+
+    private void HandleRotation()
     {
         _direction = rotationRight ? -1 : 1;
         transform.Rotate(0, 0, (rotationSpeed * _direction) * Time.deltaTime);
