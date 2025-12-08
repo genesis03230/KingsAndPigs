@@ -1,4 +1,6 @@
+using UnityEditor.Overlays;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class FallingPlatformController : MonoBehaviour
 {
@@ -6,14 +8,25 @@ public class FallingPlatformController : MonoBehaviour
     private Rigidbody2D _rigidbody2D;
     private BoxCollider2D[] _boxCollider2D;
     
+    [Header("Platform Settings")] 
     [SerializeField] private float speed = 0.75f;
     [SerializeField] private float travelDistance;
     private Vector3[] _wayPoints;
     private int _wayPointIndex;
-    public bool canMove;
-    
-    [Header("Platform Fall Details")]
+    private bool _canMove = false;
+
+    [Header("Platform Fall Settings")] 
+    [SerializeField] private bool canFall;
     [SerializeField] private float fallDelay = 0.5f;
+    [Space]
+    [SerializeField] private float impactSpeed = 3;
+    [SerializeField] private float impactDuration = 0.1f;
+    private float _impactTimer;
+    private bool _impactHappened;
+    
+    [Header("Respawn Settings")]
+    [SerializeField] private bool canRespawn = true;
+    [SerializeField] private float respawnTime = 2f;
 
     private void Awake()
     {
@@ -25,12 +38,17 @@ public class FallingPlatformController : MonoBehaviour
     private void Start()
     {
         SetupWaypoints();
+        float randomDelay =  Random.Range(0, 0.6f);
+        Invoke(nameof(ActivatePlatform), randomDelay);
     }
 
     private void Update()
     {
+        HandleImpact();
         HandleMovement();
     }
+    
+    private void ActivatePlatform() => _canMove = true;
 
     private void SetupWaypoints()
     {
@@ -42,7 +60,7 @@ public class FallingPlatformController : MonoBehaviour
 
     private void HandleMovement()
     {
-        if (!canMove) return;
+        if (!_canMove) return;
         
         transform.position = Vector2.MoveTowards(transform.position, _wayPoints[_wayPointIndex], speed * Time.deltaTime);
 
@@ -53,22 +71,37 @@ public class FallingPlatformController : MonoBehaviour
                 _wayPointIndex = 0;
         }
     }
+    
+    private void HandleImpact()
+    {
+        if (_impactTimer < 0)
+            return;
+
+        _impactTimer -= Time.deltaTime;
+        transform.position = Vector2.MoveTowards(transform.position, transform.position + (Vector3.down * 10),
+            impactSpeed * Time.deltaTime);
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         PlayerController  player = collision.gameObject.GetComponent<PlayerController>();
+        if (player == null) return;
 
-        if (player != null)
-        {
-            Invoke(nameof(SwitchOffPlatform), fallDelay);
-        }
-            
+        if (!canFall)
+            return;
+        
+        if (_impactHappened)
+            return;
+        
+        Invoke(nameof(SwitchOffPlatform), fallDelay);
+        _impactTimer = impactDuration;
+        _impactHappened = true;
     }
 
     private void SwitchOffPlatform()
     {
         _animator.SetTrigger("deactivate");
-        canMove = false;
+        _canMove = false;
         _rigidbody2D.bodyType = RigidbodyType2D.Dynamic;
         _rigidbody2D.gravityScale = 3.5f;
         _rigidbody2D.linearDamping = 0.5f;
@@ -77,6 +110,18 @@ public class FallingPlatformController : MonoBehaviour
         {
             collider.enabled = false;
         }
+
+        if (canFall && canRespawn)
+        {
+            GameObject platformPrebab = GameManager.Instance.fallingPlatformPrefab;
+            Vector3 respawnPosition = transform.position;
+            GameManager.Instance.CreateObject(platformPrebab, respawnPosition, respawnTime);
+            Invoke(nameof(DestroyPlatform),  respawnTime);
+        }
     }
-    
+
+    private void DestroyPlatform()
+    {
+        Destroy(gameObject);
+    }
 }

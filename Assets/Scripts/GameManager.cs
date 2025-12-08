@@ -23,6 +23,8 @@ public class GameManager : MonoBehaviour
 
     [Header("Traps")] 
     public GameObject arrowPrefab;
+    public GameObject fallingPlatformPrefab;
+    
     public int DiamondCollected => diamondCollected;
     public PlayerController PlayerController => playerController;
 
@@ -60,14 +62,13 @@ public class GameManager : MonoBehaviour
     public void AddDiamond() => diamondCollected++;
     public bool DiamondHaveRandomLook() => diamondHaveRandomLook;
 
-    public void CreateObject(GameObject prefab, Transform target, float delay = 0)
+    public void CreateObject(GameObject prefab, Vector3 position, float delay = 0)
     {
-        StartCoroutine(CreateObjectCourutine(prefab, target, delay));
+        StartCoroutine(CreateObjectCourutine(prefab, position, delay));
     }
-    private IEnumerator CreateObjectCourutine(GameObject prefab, Transform target, float delay)
+    private IEnumerator CreateObjectCourutine(GameObject prefab, Vector3 position, float delay)
     {
-        Vector3 newPosition = target.position;
         yield return new WaitForSeconds(delay);
-        GameObject newObject = Instantiate(prefab, newPosition, Quaternion.identity);
+        Instantiate(prefab, position, Quaternion.identity);
     }
 }
