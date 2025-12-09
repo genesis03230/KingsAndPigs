@@ -3509,6 +3509,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 568093045393615953, guid: 70a1764e08ee85244a7889bd238b5279, type: 3}
+      propertyPath: canRespawn
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3143040714731045312, guid: 70a1764e08ee85244a7889bd238b5279, type: 3}
       propertyPath: m_Name
       value: FallingPlatform_1
@@ -6548,6 +6552,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 568093045393615953, guid: 70a1764e08ee85244a7889bd238b5279, type: 3}
+      propertyPath: canRespawn
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3143040714731045312, guid: 70a1764e08ee85244a7889bd238b5279, type: 3}
       propertyPath: m_Name
       value: FallingPlatform

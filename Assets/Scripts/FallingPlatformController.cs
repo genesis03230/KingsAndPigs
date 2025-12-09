@@ -27,6 +27,7 @@ public class FallingPlatformController : MonoBehaviour
     [Header("Respawn Settings")]
     [SerializeField] private bool canRespawn = true;
     [SerializeField] private float respawnTime = 2f;
+    [SerializeField] private float destroyAfterFallTime = 5f;
 
     private void Awake()
     {
@@ -111,12 +112,18 @@ public class FallingPlatformController : MonoBehaviour
             collider.enabled = false;
         }
 
-        if (canFall && canRespawn)
+        if (!canFall) return;
+
+        if (canRespawn)
         {
             GameObject platformPrebab = GameManager.Instance.fallingPlatformPrefab;
             Vector3 respawnPosition = transform.position;
             GameManager.Instance.CreateObject(platformPrebab, respawnPosition, respawnTime);
             Invoke(nameof(DestroyPlatform),  respawnTime);
+        }
+        else
+        {
+            Invoke(nameof(DestroyPlatform), destroyAfterFallTime);
         }
     }
 
