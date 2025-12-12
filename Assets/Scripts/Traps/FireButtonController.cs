@@ -1,16 +1,25 @@
+using System;
 using UnityEngine;
 
 public class FireButtonController : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private Animator animator;
+    private FireController fireController;
+
+    private void Awake()
     {
-        
+        animator = GetComponent<Animator>();
+        fireController = GetComponentInParent<FireController>();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        
+        PlayerController player = collision.gameObject.GetComponent<PlayerController>();
+
+        if (player != null)
+        {
+            animator.SetTrigger("active");
+            fireController.SwitchOffFire();
+        }
     }
 }
