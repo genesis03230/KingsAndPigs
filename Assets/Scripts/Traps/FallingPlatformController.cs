@@ -4,6 +4,7 @@ using UnityEngine.Serialization;
 
 public class FallingPlatformController : MonoBehaviour
 {
+    private static readonly int Deactivate = Animator.StringToHash("deactivate");
     private Animator _animator;
     private Rigidbody2D _rigidbody2D;
     private BoxCollider2D[] _boxCollider2D;
@@ -101,7 +102,7 @@ public class FallingPlatformController : MonoBehaviour
 
     private void SwitchOffPlatform()
     {
-        _animator.SetTrigger("deactivate");
+        _animator.SetTrigger(Deactivate);
         _canMove = false;
         _rigidbody2D.bodyType = RigidbodyType2D.Dynamic;
         _rigidbody2D.gravityScale = 3.5f;

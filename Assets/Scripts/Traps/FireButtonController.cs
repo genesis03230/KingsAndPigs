@@ -3,13 +3,14 @@ using UnityEngine;
 
 public class FireButtonController : MonoBehaviour
 {
-    private Animator animator;
-    private FireController fireController;
+    private static readonly int Active = Animator.StringToHash("active");
+    private Animator _animator;
+    private FireController _fireController;
 
     private void Awake()
     {
-        animator = GetComponent<Animator>();
-        fireController = GetComponentInParent<FireController>();
+        _animator = GetComponent<Animator>();
+        _fireController = GetComponentInParent<FireController>();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -18,8 +19,8 @@ public class FireButtonController : MonoBehaviour
 
         if (player != null)
         {
-            animator.SetTrigger("active");
-            fireController.SwitchOffFire();
+            _animator.SetTrigger(Active);
+            _fireController.SwitchOffFire();
         }
     }
 }

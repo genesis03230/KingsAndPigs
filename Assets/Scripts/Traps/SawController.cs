@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class SawController : MonoBehaviour
 {
+    private static readonly int SawActive = Animator.StringToHash("sawActive");
     [SerializeField] private float speed;
     [SerializeField] private Transform[] wayPoints;
     [SerializeField] private int indexWayPoint = 1;
@@ -53,7 +54,7 @@ public class SawController : MonoBehaviour
 
     private void Update()
     {
-        _animator.SetBool("sawActive", canMove);
+        _animator.SetBool(SawActive, canMove);
         if (!canMove)  return;
         transform.position = Vector2.MoveTowards(transform.position, _wayPointsPosition[indexWayPoint], speed * Time.deltaTime);
         
