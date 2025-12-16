@@ -19,7 +19,7 @@ TagManager:
   - Ignore
   - Items
   - Traps
-  - 
+  - Enemy
   - 
   - 
   - 
@@ -52,6 +52,9 @@ TagManager:
     locked: 0
   - name: Items
     uniqueID: 305521499
+    locked: 0
+  - name: Enemy
+    uniqueID: 4020194225
     locked: 0
   - name: Player
     uniqueID: 4074183919
