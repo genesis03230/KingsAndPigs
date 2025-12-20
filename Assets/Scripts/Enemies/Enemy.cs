@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -16,6 +17,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] protected LayerMask whatIsGround;
     [SerializeField] protected Transform groundCheck;
     protected bool isGrounded;
+    protected bool wasGrounded;
     protected bool isWallDetected;
     protected bool isGroundInFrontDetected;
     
@@ -31,6 +33,19 @@ public class Enemy : MonoBehaviour
     protected virtual void Update()
     {
         idleTimer -= Time.deltaTime;
+        
+        if (!wasGrounded && isGrounded)
+        {
+            idleTimer = idleDuration;
+        }
+
+        wasGrounded = isGrounded;
+    }
+    
+    public void Push(Vector2 force)
+    {
+        rigidBody2D.linearVelocity = Vector2.zero;
+        rigidBody2D.AddForce(force, ForceMode2D.Impulse);
     }
 
     protected virtual void HandleFlip(float xValue)

@@ -8,12 +8,19 @@ public class EnemyPig : Enemy
     {
         base.Update();
         
-        animator.SetFloat(XVelocity, rigidBody2D.linearVelocityX);
-        HandleMovement();
         HandleCollision();
+        HandleMovement();
+        
+        float xVelocity = Mathf.Abs(rigidBody2D.linearVelocity.x);
+        if (!isGrounded)
+            xVelocity = 0f;
+
+        animator.SetFloat(XVelocity, xVelocity);
         
         if (isGrounded)
+        {
             HandleTurnAround();
+        }
     }
 
     private void HandleTurnAround()
@@ -31,7 +38,7 @@ public class EnemyPig : Enemy
     private void HandleMovement()
     {
         if (idleTimer > 0) return;
-
+        if (!isGrounded) return;
         rigidBody2D.linearVelocity = new Vector2(moveSpeed * facingDirection, rigidBody2D.linearVelocityY);
     }
 }
