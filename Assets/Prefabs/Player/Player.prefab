@@ -101,6 +101,7 @@ Transform:
   m_Children:
   - {fileID: 6642894720546933153}
   - {fileID: 1582215001515127479}
+  - {fileID: 1076699219437008643}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &9213429843054414090
@@ -148,7 +149,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -220783377
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_Sprite: {fileID: 4236677631525818213, guid: 6f897127ed9870441813d462e410c2a4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -184,9 +185,9 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 2
+  m_Interpolate: 1
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!70 &8132987581816889237
 CapsuleCollider2D:
@@ -285,6 +286,12 @@ MonoBehaviour:
   speed: 4
   canMove: 0
   moveDelay: 0.8
+  whatIsEnemy:
+    serializedVersion: 2
+    m_Bits: 2048
+  enemyCheck: {fileID: 1076699219437008643}
+  enemyCheckRadius: 0.2
+  enemyBounceForce: 6
   jumpForce: 10
   extraJumps: 1
   counterExtraJumps: 0
@@ -300,7 +307,7 @@ MonoBehaviour:
   isWallDetected: 0
   canWallSlide: 0
   slideSpeed: 0
-  wallJumpForce: {x: 5, y: 8}
+  wallJumpForce: {x: 6, y: 8}
   isWallJumping: 0
   wallJumpDuration: 0.3
   isKnocked: 0
@@ -343,3 +350,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DoorsEvent
   entranceDoor: {fileID: 0}
   animatorEntranceDoor: {fileID: 0}
+--- !u!1 &7916963272550817492
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1076699219437008643}
+  m_Layer: 6
+  m_Name: EnemyCheck
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1076699219437008643
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7916963272550817492}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.024, y: -0.464, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7075689299868144067}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
