@@ -1,12 +1,22 @@
+using JetBrains.Annotations;
 using UnityEngine;
 
 public class EnemyPig : Enemy
 {
     private static readonly int XVelocity = Animator.StringToHash("xVelocity");
+    private BoxCollider2D _boxCollider2D;
 
+    protected override void Awake()
+    {
+        base.Awake();
+        _boxCollider2D = GetComponent<BoxCollider2D>();
+    }
+    
     protected override void Update()
     {
         base.Update();
+        
+        if (isDead) return;
         
         HandleCollision();
         HandleMovement();
@@ -40,5 +50,11 @@ public class EnemyPig : Enemy
         if (idleTimer > 0) return;
         if (!isGrounded) return;
         rigidBody2D.linearVelocity = new Vector2(moveSpeed * facingDirection, rigidBody2D.linearVelocityY);
+    }
+
+    public override void Die()
+    {
+        base.Die();
+        _boxCollider2D.enabled = false;
     }
 }

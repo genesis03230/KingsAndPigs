@@ -1,12 +1,14 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Enemy : MonoBehaviour
 {
+    private static readonly int Hit = Animator.StringToHash("hit");
     protected Animator animator;
     protected Rigidbody2D rigidBody2D;
-    
+
     [SerializeField] protected float moveSpeed;
     [SerializeField] protected float idleDuration;
     protected float idleTimer;
@@ -21,6 +23,13 @@ public class Enemy : MonoBehaviour
     protected bool isWallDetected;
     protected bool isGroundInFrontDetected;
     
+    [Header("Death settings")]
+    [SerializeField] protected GameObject damageTrigger;
+    [SerializeField] protected float deathImpact;
+    [SerializeField] protected float deathRotationSpeed;
+    private int deathRotationDirection = 1;
+    protected bool isDead;
+    
     protected int facingDirection = -1;
     protected bool facingRight = false;
 
@@ -33,7 +42,31 @@ public class Enemy : MonoBehaviour
     protected virtual void Update()
     {
         idleTimer -= Time.deltaTime;
+        CheckLanding();
         
+        if (isDead)
+            HandleDeath();
+    }
+
+    public virtual void Die()
+    {
+        if(damageTrigger != null)
+            damageTrigger.SetActive(false);
+        animator.SetTrigger(Hit);
+        rigidBody2D.linearVelocity = new Vector2(rigidBody2D.linearVelocityX, deathImpact);
+        isDead = true;
+        
+        if (Random.Range(0, 100) < 50)
+            deathRotationDirection = deathRotationDirection * -1;
+    }
+
+    private void HandleDeath()
+    {
+        transform.Rotate(0, 0, (deathRotationSpeed * deathRotationDirection) * Time.deltaTime);
+    }
+
+    private void CheckLanding()
+    {
         if (!wasGrounded && isGrounded)
         {
             idleTimer = idleDuration;
@@ -41,7 +74,7 @@ public class Enemy : MonoBehaviour
 
         wasGrounded = isGrounded;
     }
-    
+
     public void Push(Vector2 force)
     {
         rigidBody2D.linearVelocity = Vector2.zero;

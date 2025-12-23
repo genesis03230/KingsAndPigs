@@ -130,13 +130,14 @@ public class PlayerController : MonoBehaviour
 
         foreach (var enemy in colliders)
         {
-            if (enemy == null) continue;
+            Enemy newEnemy = enemy.GetComponent<Enemy>();
+            if (newEnemy == null) continue;
 
             float stompMargin = 0.02f;
             bool isAbove = enemyCheck.position.y > enemy.bounds.max.y - stompMargin;
             if (!isAbove) continue;
-            
-            Destroy(enemy.gameObject);
+
+            newEnemy.Die();
             _rigidbody2D.linearVelocity = new Vector2(_rigidbody2D.linearVelocityX, enemyBounceForce);
             counterExtraJumps = extraJumps;
             canDoubleJump = true;
