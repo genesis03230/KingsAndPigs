@@ -8,6 +8,7 @@ public class Enemy : MonoBehaviour
     private static readonly int Hit = Animator.StringToHash("hit");
     protected Animator animator;
     protected Rigidbody2D rigidBody2D;
+    protected Collider2D collider2D;
 
     [SerializeField] protected float moveSpeed;
     [SerializeField] protected float idleDuration;
@@ -37,6 +38,7 @@ public class Enemy : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         rigidBody2D = GetComponent<Rigidbody2D>();
+        collider2D = GetComponent<Collider2D>();
     }
 
     protected virtual void Update()
@@ -50,6 +52,7 @@ public class Enemy : MonoBehaviour
 
     public virtual void Die()
     {
+        collider2D.enabled = false;
         if(damageTrigger != null)
             damageTrigger.SetActive(false);
         animator.SetTrigger(Hit);
