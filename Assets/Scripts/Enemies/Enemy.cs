@@ -10,14 +10,17 @@ public class Enemy : MonoBehaviour
     protected Rigidbody2D rigidBody2D;
     protected Collider2D collider2D;
 
+    [SerializeField] protected Transform player; 
     [SerializeField] protected float moveSpeed;
     [SerializeField] protected float idleDuration;
     protected float idleTimer;
+    protected bool canMove = true;
     
     [Header("Basic Collision")]
     [SerializeField] protected float groundCheckDistance = 1.1f;
     [SerializeField] protected float wallCheckDistance = 0.7f;
     [SerializeField] protected LayerMask whatIsGround;
+    [SerializeField] protected LayerMask whatIsPlayer;
     [SerializeField] protected Transform groundCheck;
     protected bool isGrounded;
     protected bool wasGrounded;
@@ -41,6 +44,11 @@ public class Enemy : MonoBehaviour
         collider2D = GetComponent<Collider2D>();
     }
 
+    protected void Start() 
+    {
+        InvokeRepeating(nameof(UpdatePlayerRef), 0, 1);
+    }
+
     protected virtual void Update()
     {
         idleTimer -= Time.deltaTime;
@@ -48,6 +56,18 @@ public class Enemy : MonoBehaviour
         
         if (isDead)
             HandleDeath();
+    }
+
+    protected void UpdatePlayerRef() //AGREGADO
+    {
+        if (player != null) return;
+
+        if (GameManager.Instance == null) return;
+
+        var playerController = GameManager.Instance.PlayerController;
+        if (playerController == null) return;
+
+        player = playerController.transform;
     }
 
     public virtual void Die()
@@ -86,7 +106,7 @@ public class Enemy : MonoBehaviour
 
     protected virtual void HandleFlip(float xValue)
     {
-        if (xValue < 0 && facingRight || xValue > 0 && !facingRight)
+        if (xValue < transform.position.x && facingRight || xValue > transform.position.x && !facingRight) 
             Flip();
     }
     
@@ -104,7 +124,7 @@ public class Enemy : MonoBehaviour
         isWallDetected = Physics2D.Raycast(transform.position, Vector2.right * facingDirection, wallCheckDistance, whatIsGround);
     }
 
-    private void OnDrawGizmos()
+    protected virtual void OnDrawGizmos()
     {
         Gizmos.DrawLine(transform.position, new Vector2(transform.position.x, transform.position.y - groundCheckDistance));
         Gizmos.DrawLine(groundCheck.position, new Vector2(groundCheck.position.x, groundCheck.position.y - groundCheckDistance));
